@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Web;
+using System.Globalization;
 
 namespace Jomura.Diagnostics.Web
 {
@@ -22,7 +23,7 @@ namespace Jomura.Diagnostics.Web
     ///         （…以下略）
     /// </example>
     /// </summary>
-    public class HttpTraceModule : IHttpModule
+    public sealed class HttpTraceModule : IHttpModule
     {
         #region IHttpModule メンバ
 
@@ -32,7 +33,7 @@ namespace Jomura.Diagnostics.Web
 
             // Responseの内容をファイルに出力するかどうかのフラグ
             string traceContentStr = ConfigurationManager.AppSettings["TraceContent"] ?? "false";
-            traceContent = Convert.ToBoolean(traceContentStr);
+            traceContent = Convert.ToBoolean(traceContentStr, CultureInfo.CurrentCulture);
 
             // ファイルを出力するパス。未設定なら%TEMP%
             string defaultPath = Path.GetTempPath() + @"\HttpTrace\";
@@ -55,13 +56,13 @@ namespace Jomura.Diagnostics.Web
 
         #endregion
 
-        static readonly string DATE_FORMAT = "yyyyMMddTHHmmssfff";
+        const string DATE_FORMAT = "yyyyMMddTHHmmssfff";
             
         // ファイルを出力するパス。未設定なら%TEMP%
         string httpTraceBasePath;
 
         // Responseの内容をファイルに出力するかどうかのフラグ
-        bool traceContent = false;
+        bool traceContent;
 
 
         void TraceRequest(object sender, EventArgs e)
@@ -72,11 +73,11 @@ namespace Jomura.Diagnostics.Web
 
             //ファイル名は、「IPアドレス＋現在時刻＋URL」
             string ipaddr = app.Request.UserHostAddress;
-            string formattedTime = startTime.ToString(DATE_FORMAT);
+            string formattedTime = startTime.ToString(DATE_FORMAT, CultureInfo.CurrentCulture);
             string url = Jomura.IO.Path.ConvertToValidFileName(app.Request.Path);
             string filename = ipaddr + "_" + formattedTime + url + ".txt";
             string path = httpTraceBasePath
-                + @"\" + startTime.ToString("yyyyMMdd") + @"\";
+                + @"\" + startTime.ToString("yyyyMMdd", CultureInfo.CurrentCulture) + @"\";
 
             // フォルダが無ければ作る。
             Directory.CreateDirectory(path);
@@ -108,8 +109,8 @@ namespace Jomura.Diagnostics.Web
 
             // Request終了時刻をファイルに出力
             DateTime endTime = DateTime.Now;
-            File.AppendAllText(filepath, Environment.NewLine + "-----" 
-                + Environment.NewLine + endTime.ToString(DATE_FORMAT)
+            File.AppendAllText(filepath, Environment.NewLine + "-----"
+                + Environment.NewLine + endTime.ToString(DATE_FORMAT, CultureInfo.CurrentCulture)
                 + Environment.NewLine + (endTime - startTime)
                 );
 
@@ -128,13 +129,13 @@ namespace Jomura.Diagnostics.Web
     {
         private Stream m_originalStream;
         private Stream m_filterStream;
-        private string m_filepath;
+        //private string m_filepath;
 
         public ResponseWriter(Stream originalStream, string filepath)
         {
             m_originalStream = originalStream;
             m_filterStream = new FileStream(filepath, FileMode.Append);
-            m_filepath = filepath;
+            //m_filepath = filepath;
         }
 
         public override bool CanRead
