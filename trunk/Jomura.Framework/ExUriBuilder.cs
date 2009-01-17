@@ -108,7 +108,7 @@ namespace Jomura
         /// 既に同じクエリ名が存在している場合でも、追加登録される。
         /// </summary>
         /// <param name="queryStrings">クエリ文字列のコレクション</param>
-        public void AddQueryStringsToUri(NameValueCollection queryStrings)
+        public void AddQueryStrings(NameValueCollection queryStrings)
         {
             Query = AddQueryStringsToUri(Query, queryStrings);
         }
