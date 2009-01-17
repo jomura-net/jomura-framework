@@ -206,7 +206,7 @@ namespace Jomura.Diagnostics.Web
         }
     }//eo class
 
-    class FileUtil
+    static class FileUtil
     {
         public static string GetValidFileName(string rawFileName)
         {
