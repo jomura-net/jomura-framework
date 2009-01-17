@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Collections.Specialized;
+using System.Web;
 
 namespace Jomura
 {
@@ -89,7 +90,7 @@ namespace Jomura
         #region AddQuery methods
 
         /// <summary>
-        /// URLにクエリ文字列を追加する。
+        /// クエリ文字列を追加する。
         /// 
         /// クエリ文字列は、Uriエンコードされる。
         /// 既に同じクエリ名が存在している場合でも、追加登録される。
@@ -98,11 +99,11 @@ namespace Jomura
         /// <param name="queryStringValue">クエリ文字列値</param>
         public void AddQueryString(string queryStringName, string queryStringValue)
         {
-            Query = AddQueryStringToUri(Query, queryStringName, queryStringValue);
+            Query = AddQueryStringToUri(Query, queryStringName, queryStringValue).Substring(1);
         }
 
         /// <summary>
-        /// URLにクエリ文字列を追加する。
+        /// クエリ文字列を追加する。
         /// 
         /// クエリ文字列は、Uriエンコードされる。
         /// 既に同じクエリ名が存在している場合でも、追加登録される。
@@ -110,10 +111,32 @@ namespace Jomura
         /// <param name="queryStrings">クエリ文字列のコレクション</param>
         public void AddQueryStrings(NameValueCollection queryStrings)
         {
-            Query = AddQueryStringsToUri(Query, queryStrings);
+            Query = AddQueryStringsToUri(Query, queryStrings).Substring(1);
         }
 
         #endregion
+
+        /// <summary>
+        /// クエリ文字列から特定のクエリ項目を削除する。
+        /// </summary>
+        /// <param name="queryStringName">クエリ文字列名</param>
+        public void RemoveQueryString(string queryStringName)
+        {
+            if (string.IsNullOrEmpty(Query)) return;
+
+            string[] queryArr = Query.Substring(1).Split('&');
+            NameValueCollection queryStrings = new NameValueCollection(queryArr.Length);
+            foreach (string queryItem in queryArr)
+            {
+                string[] nameAndValue = queryItem.Split('=');
+                queryStrings.Add(nameAndValue[0], Uri.UnescapeDataString(nameAndValue[1]));
+            }
+
+            queryStrings.Remove(queryStringName);
+
+            Query = string.Empty;
+            AddQueryStrings(queryStrings);
+        }
 
         #region static methods
 
@@ -138,7 +161,7 @@ namespace Jomura
             urlb.Append(uriString.IndexOf('?') == -1 ? "?" : "&");
             urlb.Append(queryStringName);
             urlb.Append("=");
-            urlb.Append(Uri.EscapeUriString(queryStringValue));
+            urlb.Append(Uri.EscapeDataString(queryStringValue));
             return urlb.ToString();
         }
 
