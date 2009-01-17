@@ -9,6 +9,7 @@ using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
 using System.Diagnostics;
 using System.Threading;
+using Jomura;
 
 public partial class _Default : System.Web.UI.Page 
 {
@@ -17,5 +18,19 @@ public partial class _Default : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         Thread.Sleep(rand.Next(5000));
+
+        //Test.ExUriBuilder
+        ExUriBuilder urib1 = new ExUriBuilder("http://localhost/app/test.aspx?aaa=bbb&ccc=ddd");
+        urib1.AddQueryString("eee", "エフエフエフ");
+        Debug.WriteLine("(1) " + urib1);
+
+        ExUriBuilder urib2 = new ExUriBuilder("http://localhost/app/test.aspx?aaa=bbb&ccc=%E3%83%87%E3%82%A3%E3%83%BCD");
+        urib2.RemoveQueryString("aaa");
+        Debug.WriteLine("(2) " + urib2);
+
+        urib2.RemoveQueryString("eee");
+        Debug.WriteLine("(3) " + urib2);
+
+
     }
 }
