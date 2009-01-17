@@ -7,8 +7,13 @@ namespace Jomura.IO
     /// <summary>
     /// ファイルパス、ファイル名等に関する静的メソッドを提供する。
     /// </summary>
-    public class Path
+    public static class Path
     {
+        /// <summary>
+        /// ファイル名として適当でない文字を'-'に置換した文字列を返す。
+        /// </summary>
+        /// <param name="rawFileName">元のファイル名</param>
+        /// <returns>変換後のファイル名</returns>
         public static string ConvertToValidFileName(string rawFileName)
         {
             string validFileName = rawFileName;
