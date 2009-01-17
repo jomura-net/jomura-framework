@@ -73,7 +73,8 @@ namespace Jomura.Diagnostics.Web
             //ファイル名は、「IPアドレス＋現在時刻」
             string ipaddr = app.Request.UserHostAddress;
             string formattedTime = startTime.ToString(DATE_FORMAT);
-            string filename = ipaddr + "_" + formattedTime + ".txt";
+            string url = FileUtil.GetValidFileName(app.Request.Path);
+            string filename = ipaddr + "_" + formattedTime + url + ".txt";
             string path = httpTraceBasePath
                 + @"\" + startTime.ToString("yyyyMMdd") + @"\";
 
@@ -204,4 +205,19 @@ namespace Jomura.Diagnostics.Web
             base.Dispose(disposing);
         }
     }//eo class
+
+    class FileUtil
+    {
+        public static string GetValidFileName(string rawFileName)
+        {
+            string validFileName = rawFileName;
+            char[] invalidChars = Path.GetInvalidFileNameChars();
+
+            foreach (char c in invalidChars)
+            {
+                validFileName = validFileName.Replace(c, '-');
+            }
+            return validFileName;
+        }
+    }
 }//eo namespace
