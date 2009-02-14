@@ -9,14 +9,14 @@ namespace Jomura
     /// <summary>
     /// Uriの作成・加工をサポートするユーティリティクラス
     /// </summary>
-    public class ExUriBuilder : System.UriBuilder
+    public class UriBuilderEx : System.UriBuilder
     {
         #region Constructors
 
         /// <summary>
         /// 引数なしコンストラクタ
         /// </summary>
-        public ExUriBuilder()
+        public UriBuilderEx()
             : base()
         {
         }
@@ -25,7 +25,7 @@ namespace Jomura
         /// コンストラクタ
         /// </summary>
         /// <param name="uri">URI文字列</param>
-        public ExUriBuilder(string uri)
+        public UriBuilderEx(string uri)
             : base(uri)
         {
         }
@@ -34,7 +34,7 @@ namespace Jomura
         /// コンストラクタ
         /// </summary>
         /// <param name="uri">URI</param>
-        public ExUriBuilder(Uri uri)
+        public UriBuilderEx(Uri uri)
             : base(uri)
         {
         }
@@ -44,7 +44,7 @@ namespace Jomura
         /// </summary>
         /// <param name="schemeName">スキーマ名</param>
         /// <param name="hostName">ホスト名</param>
-        public ExUriBuilder(string schemeName, string hostName)
+        public UriBuilderEx(string schemeName, string hostName)
             : base(schemeName, hostName)
         {
         }
@@ -55,7 +55,7 @@ namespace Jomura
         /// <param name="scheme">スキーマ名</param>
         /// <param name="host">ホスト名</param>
         /// <param name="portNumber">ポート番号</param>
-        public ExUriBuilder(string scheme, string host, int portNumber)
+        public UriBuilderEx(string scheme, string host, int portNumber)
             : base(scheme, host, portNumber)
         {
         }
@@ -67,7 +67,7 @@ namespace Jomura
         /// <param name="host">ホスト名</param>
         /// <param name="port">ポート番号</param>
         /// <param name="pathValue">パス</param>
-        public ExUriBuilder(string scheme, string host, int port, string pathValue)
+        public UriBuilderEx(string scheme, string host, int port, string pathValue)
             : base(scheme, host, port, pathValue)
         {
         }
@@ -80,7 +80,7 @@ namespace Jomura
         /// <param name="port">ポート番号</param>
         /// <param name="path">パス</param>
         /// <param name="extraValue">追加文字列</param>
-        public ExUriBuilder(string scheme, string host, int port, string path, string extraValue)
+        public UriBuilderEx(string scheme, string host, int port, string path, string extraValue)
             : base(scheme, host, port, path, extraValue)
         {
         }

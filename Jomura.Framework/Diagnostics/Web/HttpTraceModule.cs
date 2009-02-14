@@ -74,7 +74,7 @@ namespace Jomura.Diagnostics.Web
             //ファイル名は、「IPアドレス＋現在時刻＋URL」
             string ipaddr = app.Request.UserHostAddress;
             string formattedTime = startTime.ToString(DATE_FORMAT, CultureInfo.CurrentCulture);
-            string url = Jomura.IO.ExPath.ConvertToValidFileName(app.Request.Path);
+            string url = Jomura.IO.PathEx.ConvertToValidFileName(app.Request.Path);
             string filename = ipaddr + "_" + formattedTime + url + ".txt";
             string path = httpTraceBasePath
                 + @"\" + startTime.ToString("yyyyMMdd", CultureInfo.CurrentCulture) + @"\";

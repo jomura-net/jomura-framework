@@ -20,11 +20,11 @@ public partial class _Default : System.Web.UI.Page
         Thread.Sleep(rand.Next(5000));
 
         //Test.ExUriBuilder
-        ExUriBuilder urib1 = new ExUriBuilder("http://localhost/app/test.aspx?aaa=bbb&ccc=ddd");
+        UriBuilderEx urib1 = new UriBuilderEx("http://localhost/app/test.aspx?aaa=bbb&ccc=ddd");
         urib1.AddQueryString("eee", "エフエフエフ");
         Debug.WriteLine("(1) " + urib1);
 
-        ExUriBuilder urib2 = new ExUriBuilder("http://localhost/app/test.aspx?aaa=bbb&ccc=%E3%83%87%E3%82%A3%E3%83%BCD");
+        UriBuilderEx urib2 = new UriBuilderEx("http://localhost/app/test.aspx?aaa=bbb&ccc=%E3%83%87%E3%82%A3%E3%83%BCD");
         urib2.RemoveQueryString("aaa");
         Debug.WriteLine("(2) " + urib2);
 

@@ -7,7 +7,7 @@ namespace Jomura.IO
     /// <summary>
     /// ファイルパス、ファイル名等に関する静的メソッドを提供する。
     /// </summary>
-    public static class ExPath
+    public static class PathEx
     {
         /// <summary>
         /// ファイル名として適当でない文字を'-'に置換した文字列を返す。
