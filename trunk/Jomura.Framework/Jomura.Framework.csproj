@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D34939DA-45B5-4CEB-A321-66BBD194CB7F}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\AbstractDAC.cs" />
+    <Compile Include="Data\Util\DatabaseCopy.cs" />
     <Compile Include="Diagnostics\Web\HttpTraceModule.cs" />
     <Compile Include="IO\PathEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
