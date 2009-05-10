@@ -35,6 +35,27 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Test.HttpTrace", "Test.Http
 		VWDPort = "2245"
 	EndProjectSection
 EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Jomura.Framework.WebSite", "Jomura.Framework.WebSite\", "{CC554C20-9095-4104-A665-5F1285D4595F}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFramework = "3.5"
+		Debug.AspNetCompiler.VirtualPath = "/Jomura.Framework.WebSite"
+		Debug.AspNetCompiler.PhysicalPath = "Jomura.Framework.WebSite\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\Jomura.Framework.WebSite\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/Jomura.Framework.WebSite"
+		Release.AspNetCompiler.PhysicalPath = "Jomura.Framework.WebSite\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\Jomura.Framework.WebSite\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "3220"
+		DefaultWebSiteLanguage = "Visual C#"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -79,6 +100,16 @@ Global
 		{2B843C2B-2948-4AD6-BB2E-FFC36996E7AE}.Release|Any CPU.ActiveCfg = Debug|.NET
 		{2B843C2B-2948-4AD6-BB2E-FFC36996E7AE}.Release|Mixed Platforms.ActiveCfg = Debug|.NET
 		{2B843C2B-2948-4AD6-BB2E-FFC36996E7AE}.Release|Mixed Platforms.Build.0 = Debug|.NET
+		{CC554C20-9095-4104-A665-5F1285D4595F}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{CC554C20-9095-4104-A665-5F1285D4595F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC554C20-9095-4104-A665-5F1285D4595F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC554C20-9095-4104-A665-5F1285D4595F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CC554C20-9095-4104-A665-5F1285D4595F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CC554C20-9095-4104-A665-5F1285D4595F}.Release|.NET.ActiveCfg = Debug|Any CPU
+		{CC554C20-9095-4104-A665-5F1285D4595F}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC554C20-9095-4104-A665-5F1285D4595F}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{CC554C20-9095-4104-A665-5F1285D4595F}.Release|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CC554C20-9095-4104-A665-5F1285D4595F}.Release|Mixed Platforms.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
