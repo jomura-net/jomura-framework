@@ -46,13 +46,16 @@
   <ItemGroup>
     <Compile Include="Data\AbstractDAC.cs" />
     <Compile Include="Data\Util\DatabaseCopy.cs" />
-    <Compile Include="Diagnostics\Web\HttpTraceModule.cs" />
+    <Compile Include="Data\Util\DDL.cs" />
+    <Compile Include="Diagnostics\Web\HttpTrace.cs" />
     <Compile Include="IO\PathEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\SuppressMessages.cs" />
     <Compile Include="UriBuilderEx.cs" />
+    <Compile Include="Web\MobileFilter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="key.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

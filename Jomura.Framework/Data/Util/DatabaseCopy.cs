@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Configuration;
 using System.Runtime.Remoting.Messaging;
+using System.Data.Common;
 
 namespace Jomura.Data.Util
 {
@@ -32,33 +33,6 @@ namespace Jomura.Data.Util
         delegate void CopyTableDgt(SqlConnection srcConn, SqlConnection destConn,
             string databaseName, string tableName);
 
-        #region Counts
-        /// <summary>
-        /// 処理数をカウントするDDL種別
-        /// </summary>
-        public enum DDL { 
-            /// <summary>
-            ///  Create Table文
-            /// </summary>
-            Create,
-            /// <summary>
-            ///  Drop Table文
-            /// </summary>
-            Drop,
-            /// <summary>
-            ///  INSERT文
-            /// </summary>
-            Insert,
-            /// <summary>
-            ///  Update文
-            /// </summary>
-            Update,
-            /// <summary>
-            ///  Delete文
-            /// </summary>
-            Delete
-        }
-
         /// <summary>
         /// DDL種別毎の処理数
         /// Counts[Create|Drop] … 処理されたテーブル数
@@ -69,7 +43,6 @@ namespace Jomura.Data.Util
             get { return counts; }
         }
         Dictionary<DDL, int> counts = new Dictionary<DDL, int>();
-        #endregion
 
         #region Constructors
 
@@ -190,7 +163,7 @@ namespace Jomura.Data.Util
                 string tableName = ar.AsyncState as string;
 
                 //TODO エラーログ出力
-                Debug.WriteLine(ex);
+                Debug.WriteLine("tableName:" + tableName  + " " + ex);
 
                 //throw;
             }
@@ -331,15 +304,15 @@ drop table {1}
         /// <summary>
         /// テーブルを複製する
         /// </summary>
-        /// <param name="_srcConn">複製元DB接続</param>
-        /// <param name="_destConn">複製先DB接続</param>
+        /// <param name="srcConnection">複製元DB接続</param>
+        /// <param name="destConnection">複製先DB接続</param>
         /// <param name="databaseName">DB名</param>
         /// <param name="tableName">テーブル名</param>
-        public void CopyTable(SqlConnection _srcConn, SqlConnection _destConn,
+        public void CopyTable(DbConnection srcConnection, DbConnection destConnection,
             string databaseName, string tableName)
         {
-            using (SqlConnection srcConn = new SqlConnection(_srcConn.ConnectionString))
-            using (SqlConnection destConn = new SqlConnection(_destConn.ConnectionString))
+            using (SqlConnection srcConn = new SqlConnection(srcConnection.ConnectionString))
+            using (SqlConnection destConn = new SqlConnection(destConnection.ConnectionString))
             {
                 OpenConnectionAndChangeDatabase(srcConn, databaseName);
                 OpenConnectionAndChangeDatabase(destConn, databaseName);
