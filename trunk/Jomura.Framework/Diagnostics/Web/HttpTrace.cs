@@ -23,7 +23,7 @@ namespace Jomura.Diagnostics.Web
     ///         （…以下略）
     /// </example>
     /// </summary>
-    public sealed class HttpTraceModule : IHttpModule
+    public sealed class HttpTrace : IHttpModule
     {
         #region IHttpModule メンバ
 
@@ -32,12 +32,14 @@ namespace Jomura.Diagnostics.Web
             Debug.WriteLine("HttpTraceModule Init.");
 
             // Responseの内容をファイルに出力するかどうかのフラグ
-            string traceContentStr = ConfigurationManager.AppSettings["TraceContent"] ?? "false";
+            string traceContentStr = ConfigurationManager.AppSettings
+                ["Jomura.Diagnostics.Web.HttpTrace.TraceContent"] ?? "false";
             traceContent = Convert.ToBoolean(traceContentStr, CultureInfo.CurrentCulture);
 
             // ファイルを出力するパス。未設定なら%TEMP%
             string defaultPath = Path.GetTempPath() + @"\HttpTrace\";
-            string path = ConfigurationManager.AppSettings["HttpTracePath"] ?? string.Empty;
+            string path = ConfigurationManager.AppSettings
+                ["Jomura.Diagnostics.Web.HttpTrace.HttpTracePath"] ?? string.Empty;
             httpTraceBasePath = Path.Combine(defaultPath, path);
             // フォルダが無ければ作る。
             Directory.CreateDirectory(httpTraceBasePath);

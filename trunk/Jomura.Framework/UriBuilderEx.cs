@@ -146,14 +146,14 @@ namespace Jomura
         /// クエリ文字列は、Uriエンコードされる。
         /// 既に同じクエリ名が存在している場合でも、追加登録される。
         /// </summary>
-        /// <param name="uriString">URL文字列</param>
+        /// <param name="uriStr">URL文字列</param>
         /// <param name="queryStringName">クエリ文字列名</param>
         /// <param name="queryStringValue">クエリ文字列値</param>
         /// <returns>クエリ文字列が追加されたURL文字列</returns>
-        public static string AddQueryStringToUri(string uriString, string queryStringName, string queryStringValue)
+        public static string AddQueryStringToUri(string uriStr, string queryStringName, string queryStringValue)
         {
             //それぞれの引数がnullの場合への対応
-            uriString = uriString ?? string.Empty;
+            string uriString = uriStr ?? string.Empty;
             if (string.IsNullOrEmpty(queryStringName)) return uriString;
             queryStringValue = queryStringValue ?? string.Empty;
 
@@ -171,12 +171,12 @@ namespace Jomura
         /// クエリ文字列は、Uriエンコードされる。
         /// 既に同じクエリ名が存在している場合でも、追加登録される。
         /// </summary>
-        /// <param name="uriString">URL文字列</param>
+        /// <param name="uriStr">URL文字列</param>
         /// <param name="queryStrings">クエリ文字列のコレクション</param>
         /// <returns>クエリ文字列が追加されたURL文字列</returns>
-        public static string AddQueryStringsToUri(string uriString, NameValueCollection queryStrings)
+        public static string AddQueryStringsToUri(string uriStr, NameValueCollection queryStrings)
         {
-            string returnString = uriString;
+            string returnString = uriStr;
             foreach (string queryStringName in queryStrings)
             {
                 returnString = AddQueryStringToUri(returnString, queryStringName, queryStrings[queryStringName]);
