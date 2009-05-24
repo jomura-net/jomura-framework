@@ -46,13 +46,16 @@
   <ItemGroup>
     <Compile Include="Data\AbstractDAC.cs" />
     <Compile Include="Data\Util\DatabaseCopy.cs" />
-    <Compile Include="Data\Util\DDL.cs" />
+    <Compile Include="Data\Util\SqlType.cs" />
     <Compile Include="Diagnostics\Web\HttpTrace.cs" />
     <Compile Include="IO\PathEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\SuppressMessages.cs" />
     <Compile Include="UriBuilderEx.cs" />
     <Compile Include="Web\MobileFilter.cs" />
+    <Compile Include="Web\UI\ControlHelper.cs" />
+    <Compile Include="Web\UI\WebControls\HyperLinkEx.cs" />
+    <Compile Include="Web\UI\WebControls\Token.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

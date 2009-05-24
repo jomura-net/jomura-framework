@@ -16,6 +16,8 @@ using System.Diagnostics.CodeAnalysis;
 [module: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "Jomura.Diagnostics.Web")]
 [module: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "Jomura.Framework")]
 [module: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "Jomura.IO")]
+[module: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "Jomura.Web.UI")]
+[module: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "Jomura.Web.UI.WebControls")]
 
 
 // Data/AbstractDAC.cs
@@ -39,10 +41,9 @@ using System.Diagnostics.CodeAnalysis;
 // ExUriBuilder.cs
 
 // Uriå^Ç≈ÇÕÇ»Ç≠ÅAÇÊÇËflexÇ…ÅAstringå^ÇóòópÇ∑ÇÈÅB
-[module: SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", Scope = "member", Target = "Jomura.UriBuilderEx.#AddQueryStringToUri(System.String,System.String,System.String)", MessageId = "0#")]
-[module: SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", Scope = "member", Target = "Jomura.UriBuilderEx.#AddQueryStringsToUri(System.String,System.Collections.Specialized.NameValueCollection)", MessageId = "0#")]
-[module: SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings", Scope = "member", Target = "Jomura.UriBuilderEx.#AddQueryStringToUri(System.String,System.String,System.String)")]
-[module: SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings", Scope = "member", Target = "Jomura.UriBuilderEx.#AddQueryStringsToUri(System.String,System.Collections.Specialized.NameValueCollection)")]
+[module: SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", Scope = "member", Target = "Jomura.UriBuilderEx.#AddQueryString(System.String,System.String,System.String)", MessageId = "0#")]
+[module: SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", Scope = "member", Target = "Jomura.UriBuilderEx.#RemoveQueryString(System.String,System.String)", MessageId = "0#")]
+[module: SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", Scope = "member", Target = "Jomura.UriBuilderEx.#AddQueryStrings(System.String,System.Collections.Specialized.NameValueCollection)", MessageId = "0#")]
 [module: SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads", Scope = "member", Target = "Jomura.UriBuilderEx.#.ctor(System.String)")]
 [module: SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Scope = "member", Target = "Jomura.UriBuilderEx.#.ctor(System.String)")]
 

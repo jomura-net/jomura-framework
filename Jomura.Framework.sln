@@ -33,6 +33,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Test.HttpTrace", "Test.Http
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "2245"
+		StartServerOnDebug = "false"
 	EndProjectSection
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Jomura.Framework.WebSite", "Jomura.Framework.WebSite\", "{CC554C20-9095-4104-A665-5F1285D4595F}"
@@ -54,9 +55,33 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Jomura.Framework.WebSite", 
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "3220"
 		DefaultWebSiteLanguage = "Visual C#"
+		StartServerOnDebug = "false"
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestCodes", "TestCodes", "{61B34AC8-16A0-43B7-978A-DE6303DC929D}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Test.WebControls", "Test.WebControls\", "{E04C9AB2-9299-4CDD-9D6F-3DDB48520B8C}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFramework = "3.5"
+		ProjectReferences = "{D34939DA-45B5-4CEB-A321-66BBD194CB7F}|Jomura.Framework.dll;"
+		Debug.AspNetCompiler.VirtualPath = "/Test.WebControls"
+		Debug.AspNetCompiler.PhysicalPath = "Test.WebControls\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\Test.WebControls\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/Test.WebControls"
+		Release.AspNetCompiler.PhysicalPath = "Test.WebControls\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\Test.WebControls\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "1872"
+		DefaultWebSiteLanguage = "Visual C#"
+		StartServerOnDebug = "false"
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -112,6 +137,16 @@ Global
 		{CC554C20-9095-4104-A665-5F1285D4595F}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{CC554C20-9095-4104-A665-5F1285D4595F}.Release|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{CC554C20-9095-4104-A665-5F1285D4595F}.Release|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E04C9AB2-9299-4CDD-9D6F-3DDB48520B8C}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{E04C9AB2-9299-4CDD-9D6F-3DDB48520B8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E04C9AB2-9299-4CDD-9D6F-3DDB48520B8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E04C9AB2-9299-4CDD-9D6F-3DDB48520B8C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E04C9AB2-9299-4CDD-9D6F-3DDB48520B8C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E04C9AB2-9299-4CDD-9D6F-3DDB48520B8C}.Release|.NET.ActiveCfg = Debug|Any CPU
+		{E04C9AB2-9299-4CDD-9D6F-3DDB48520B8C}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{E04C9AB2-9299-4CDD-9D6F-3DDB48520B8C}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{E04C9AB2-9299-4CDD-9D6F-3DDB48520B8C}.Release|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E04C9AB2-9299-4CDD-9D6F-3DDB48520B8C}.Release|Mixed Platforms.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -119,5 +154,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{2B843C2B-2948-4AD6-BB2E-FFC36996E7AE} = {61B34AC8-16A0-43B7-978A-DE6303DC929D}
 		{6F5AE11C-0DF9-4027-91E0-D952F83A0601} = {61B34AC8-16A0-43B7-978A-DE6303DC929D}
+		{E04C9AB2-9299-4CDD-9D6F-3DDB48520B8C} = {61B34AC8-16A0-43B7-978A-DE6303DC929D}
 	EndGlobalSection
 EndGlobal

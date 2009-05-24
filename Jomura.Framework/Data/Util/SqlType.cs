@@ -7,7 +7,7 @@ namespace Jomura.Data.Util
     /// <summary>
     /// 処理数をカウントするDDL種別
     /// </summary>
-    public enum DDL
+    public enum SqlType
     {
         /// <summary>
         ///  Create Table文

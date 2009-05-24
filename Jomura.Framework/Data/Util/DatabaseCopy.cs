@@ -38,11 +38,11 @@ namespace Jomura.Data.Util
         /// Counts[Create|Drop] … 処理されたテーブル数
         /// Counts[Insert|Update|Delete] … 処理されたレコード数
         /// </summary>
-        public Dictionary<DDL, int> Counts
+        public Dictionary<SqlType, int> Counts
         {
             get { return counts; }
         }
-        Dictionary<DDL, int> counts = new Dictionary<DDL, int>();
+        Dictionary<SqlType, int> counts = new Dictionary<SqlType, int>();
 
         #region Constructors
 
@@ -51,9 +51,9 @@ namespace Jomura.Data.Util
         /// </summary>
         public DatabaseCopy()
         {
-            foreach (DDL ddl in Enum.GetValues(typeof(DDL)))
+            foreach (SqlType sqlType in Enum.GetValues(typeof(SqlType)))
             {
-                counts[ddl] = 0;
+                counts[sqlType] = 0;
             }
         }
 
@@ -97,7 +97,7 @@ namespace Jomura.Data.Util
                 {
                     // DropされたテーブルをDropする
                     //TODO ログ出力(databaseName, destTableName, "drop");
-                    counts[DDL.Drop] += DropTable(destConn, databaseName, destTableName);
+                    counts[SqlType.Drop] += DropTable(destConn, databaseName, destTableName);
                 }
                 else
                 {
@@ -126,7 +126,7 @@ namespace Jomura.Data.Util
                 {
                     // CreateされたテーブルをCreateする。
                     string sql = GetCreateTableSql(srcConn, databaseName, srcTableName);
-                    counts[DDL.Create] += ExecuteNonQuery(destConn, sql);
+                    counts[SqlType.Create] += ExecuteNonQuery(destConn, sql);
 
                     // Createされたテーブルにデータを全件Insertする。
                     //TODO ログ出力(databaseName, srcTableName, "insert");
@@ -357,7 +357,7 @@ drop table {1}
                         deleteSql.Append(" where " + string.Join(" and ", expression.ToArray()));
 
                         //Debug.WriteLine("delete sql : " + deleteSql.ToString());
-                        counts[DDL.Delete] += ExecuteNonQuery(destConn, deleteSql.ToString());
+                        counts[SqlType.Delete] += ExecuteNonQuery(destConn, deleteSql.ToString());
                     }
                 }
 
@@ -428,7 +428,7 @@ drop table {1}
                         updateSql.Append(" where " + expression4pkStr);
 
                         //Debug.WriteLine("update sql : " + updateSql.ToString());
-                        counts[DDL.Update] += ExecuteNonQuery(destConn, updateSql.ToString());
+                        counts[SqlType.Update] += ExecuteNonQuery(destConn, updateSql.ToString());
                     }
                     else
                     {
@@ -451,7 +451,7 @@ drop table {1}
                         insertSql.Append(string.Join(",", expression4ist.ToArray()) + ")");
 
                         //Debug.WriteLine("insert sql : " + insertSql.ToString());
-                        counts[DDL.Insert] += ExecuteNonQuery(destConn, insertSql.ToString());
+                        counts[SqlType.Insert] += ExecuteNonQuery(destConn, insertSql.ToString());
                     }
                 }
 
