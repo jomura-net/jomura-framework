@@ -99,7 +99,7 @@ namespace Jomura
         /// <param name="queryStringValue">クエリ文字列値</param>
         public void AddQueryString(string queryStringName, string queryStringValue)
         {
-            Query = AddQueryStringToUri(Query, queryStringName, queryStringValue).Substring(1);
+            Query = AddQueryString(Query, queryStringName, queryStringValue).Substring(1);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Jomura
         /// <param name="queryStrings">クエリ文字列のコレクション</param>
         public void AddQueryStrings(NameValueCollection queryStrings)
         {
-            Query = AddQueryStringsToUri(Query, queryStrings).Substring(1);
+            Query = AddQueryStrings(Query, queryStrings).Substring(1);
         }
 
         #endregion
@@ -129,10 +129,11 @@ namespace Jomura
             foreach (string queryItem in queryArr)
             {
                 string[] nameAndValue = queryItem.Split('=');
-                queryStrings.Add(nameAndValue[0], Uri.UnescapeDataString(nameAndValue[1]));
+                if (queryStringName != nameAndValue[0])
+                {
+                    queryStrings.Add(nameAndValue[0], Uri.UnescapeDataString(nameAndValue[1]));
+                }
             }
-
-            queryStrings.Remove(queryStringName);
 
             Query = string.Empty;
             AddQueryStrings(queryStrings);
@@ -150,7 +151,7 @@ namespace Jomura
         /// <param name="queryStringName">クエリ文字列名</param>
         /// <param name="queryStringValue">クエリ文字列値</param>
         /// <returns>クエリ文字列が追加されたURL文字列</returns>
-        public static string AddQueryStringToUri(string uriStr, string queryStringName, string queryStringValue)
+        public static string AddQueryString(string uriStr, string queryStringName, string queryStringValue)
         {
             //それぞれの引数がnullの場合への対応
             string uriString = uriStr ?? string.Empty;
@@ -174,14 +175,40 @@ namespace Jomura
         /// <param name="uriStr">URL文字列</param>
         /// <param name="queryStrings">クエリ文字列のコレクション</param>
         /// <returns>クエリ文字列が追加されたURL文字列</returns>
-        public static string AddQueryStringsToUri(string uriStr, NameValueCollection queryStrings)
+        public static string AddQueryStrings(string uriStr, NameValueCollection queryStrings)
         {
             string returnString = uriStr;
             foreach (string queryStringName in queryStrings)
             {
-                returnString = AddQueryStringToUri(returnString, queryStringName, queryStrings[queryStringName]);
+                returnString = AddQueryString(returnString, queryStringName, queryStrings[queryStringName]);
             }
             return returnString;
+        }
+
+        /// <summary>
+        /// クエリ文字列から特定のクエリ項目を削除する。
+        /// </summary>
+        /// <param name="uriStr">URL文字列</param>
+        /// <param name="queryStringName">クエリ文字列名</param>
+        public static string RemoveQueryString(string uriStr, string queryStringName)
+        {
+            int index = uriStr.IndexOf('?');
+            if (index == -1) return uriStr;
+
+            string queries = uriStr.Substring(index + 1);
+
+            string[] queryArr = queries.Split('&');
+            NameValueCollection queryStrings = new NameValueCollection(queryArr.Length);
+            foreach (string queryItem in queryArr)
+            {
+                string[] nameAndValue = queryItem.Split('=');
+                if (queryStringName != nameAndValue[0])
+                {
+                    queryStrings.Add(nameAndValue[0], Uri.UnescapeDataString(nameAndValue[1]));
+                }
+            }
+
+            return AddQueryStrings(uriStr.Substring(0, index), queryStrings);
         }
 
         #endregion
