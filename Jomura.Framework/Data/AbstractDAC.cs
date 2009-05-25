@@ -2,7 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Data;
-using System.Data.SqlClient;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Text;
 
@@ -13,7 +13,8 @@ namespace Jomura.Data
     /// SQL実行のための実装を簡略化する。<br />
     /// SqlConnection, SqlDataAdapter, SqlCommandの管理を
     /// DACから隠蔽する。<br />
-    /// System.Data.SqlClient(SQL Server)依存。OracleやMySQLでは利用不可。
+    /// System.Data.SqlClient(SQL Server)非依存。
+    /// ConnectionStringSettingsでProviderを設定すること。
     /// </summary>
     /// <remarks>
     /// 全てのDACは、このクラスを継承して実装する。<br />
@@ -40,8 +41,7 @@ namespace Jomura.Data
     /// }
     /// </code>
     /// 
-    /// TODO: 1つのTransactionで1つのSqlConnectinオブジェクトに制限する
-    /// TODO: SqlParameterをDACから隠蔽化する。
+    /// TODO: 1つのDbConnectionオブジェクトを複数のDACで使い回す。
     /// </remarks>
     public abstract class AbstractDAC : IDisposable
     {
@@ -49,23 +49,30 @@ namespace Jomura.Data
 
         /// <summary>
         /// デフォルト・コンストラクタ
+        /// 
+        /// DB接続オブジェクトをインスタンス化する。
+        /// アプリケーション構成ファイルに、最初に記述してある設定を利用する。
         /// </summary>
         protected AbstractDAC()
         {
-            InitConnection();
+            InitConnection(ConfigurationManager.ConnectionStrings[1]);
         }
 
         /// <summary>
         /// コンストラクタ
         /// 
-        /// DB接続文字列を指定する。
+        /// DB接続オブジェクトをインスタンス化する。
+        /// アプリケーション構成ファイルの記述と、引数のDB接続キー名が一致する
+        /// DB接続オブジェクトをインスタンス化する。
         /// </summary>
         /// <param name="connectionStringName">DB接続文字列のキー名</param>
         protected AbstractDAC(string connectionStringName)
         {
-            InitConnection(connectionStringName);
+            InitConnection(ConfigurationManager.ConnectionStrings[connectionStringName]);
         }
 
+        // 以下のコンストラクタは、DbProviderFactoryをインスタンス化できないので却下。
+        /* 
         /// <summary>
         /// コンストラクタ
         /// 
@@ -75,9 +82,28 @@ namespace Jomura.Data
         /// DB接続オブジェクトを共有するために利用する。
         /// </summary>
         /// <param name="connection">DB接続オブジェクト</param>
-        protected AbstractDAC(SqlConnection connection)
+        protected AbstractDAC(DbConnection connection)
         {
             m_Connection = connection;
+        }
+        */
+
+        #endregion
+
+        #region DbProviderFactory related
+
+        DbProviderFactory factory;
+
+        /// <summary>
+        /// DBパラメータインスタンスを生成する。
+        /// </summary>
+        /// <returns>DBパラメータインスタンス</returns>
+        protected DbParameter CreateParameter(string parameterName, object value)
+        {
+            DbParameter parameter = factory.CreateParameter();
+            parameter.ParameterName = parameterName;
+            parameter.Value = value;
+            return parameter;
         }
 
         #endregion
@@ -89,43 +115,25 @@ namespace Jomura.Data
         /// 取得時、インスタンス化されていなければ
         /// インスタンス化して返す。
         /// </summary>
-        protected SqlConnection Connection
+        protected DbConnection Connection
         {
             get
             {
                 if (m_Connection == null)
                 {
-                    InitConnection();
+                    InitConnection(ConfigurationManager.ConnectionStrings[1]);
                 }
                 return m_Connection;
             }
         }
-        SqlConnection m_Connection;
+        DbConnection m_Connection;
 
-        /// <summary>
-        /// DB接続オブジェクトをインスタンス化する。
-        /// 
-        /// アプリケーション構成ファイルに、最初に記述してある設定を利用する。
-        /// </summary>
-        /// <returns>DB接続オブジェクト</returns>
-        void InitConnection()
+        void InitConnection(ConnectionStringSettings settings)
         {
-            SqlConnection connection = new SqlConnection();
-            ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings[1];
+            factory = DbProviderFactories.GetFactory(settings.ProviderName);
+            DbConnection connection = factory.CreateConnection();
             connection.ConnectionString = settings.ConnectionString;
-            m_Connection = connection;
-        }
 
-        /// <summary>
-        /// 引数で指定したDB接続キー名で、DB接続オブジェクトをインスタンス化する。
-        /// </summary>
-        /// <param name="connectionStringName">DB接続キー名</param>
-        /// <returns>DB接続オブジェクト</returns>
-        void InitConnection(string connectionStringName)
-        {
-            SqlConnection connection = new SqlConnection();
-            ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings[connectionStringName];
-            connection.ConnectionString = settings.ConnectionString;
             m_Connection = connection;
         }
 
@@ -138,7 +146,7 @@ namespace Jomura.Data
         /// 取得時、インスタンス化されていなければ
         /// インスタンス化して返す。
         /// </summary>
-        SqlDataAdapter Adapter
+        DbDataAdapter Adapter
         {
             get
             {
@@ -149,14 +157,14 @@ namespace Jomura.Data
                 return m_Adapter;
             }
         }
-        SqlDataAdapter m_Adapter;
+        DbDataAdapter m_Adapter;
 
         /// <summary>
         /// データアダプタをインスタンス化する。
         /// </summary>
         void InitAdapter()
         {
-            m_Adapter = new SqlDataAdapter();
+            m_Adapter = factory.CreateDataAdapter();
         }
 
         #endregion
@@ -172,11 +180,10 @@ namespace Jomura.Data
         /// <param name="commandText">SQL文</param>
         /// <param name="parameterList">SQLパラメータ</param>
         /// <returns>SQLコマンドインスタンス</returns>
-        SqlCommand InitCommand(string commandText,
-            Collection<SqlParameter> parameterList)
+        DbCommand InitCommand(string commandText,
+            Collection<DbParameter> parameterList)
         {
-            SqlCommand command = new SqlCommand();
-            command.Connection = Connection;
+            DbCommand command = Connection.CreateCommand();
             command.CommandType = CommandType.Text;
             command.CommandText = commandText;
 
@@ -187,7 +194,7 @@ namespace Jomura.Data
 
             if (parameterList != null)
             {
-                SqlParameter[] parameters = new SqlParameter[parameterList.Count];
+                DbParameter[] parameters = new DbParameter[parameterList.Count];
                 parameterList.CopyTo(parameters, 0);
 
                 command.Parameters.Clear();
@@ -228,7 +235,7 @@ namespace Jomura.Data
         /// 影響を受ける行は含まれません。 
         /// </returns>
         protected int Fill(DataTable dataTable, string sql,
-            Collection<SqlParameter> parameterList)
+            Collection<DbParameter> parameterList)
         {
             //最初にデータをクリアする。
             dataTable.Clear();
@@ -238,10 +245,9 @@ namespace Jomura.Data
             {
                 return Adapter.Fill(dataTable);
             }
-            catch (SqlException se)
+            catch (DbException de)
             {
-                //TODO ログ出力
-                Debug.WriteLine(se);
+                Trace.TraceError(de.StackTrace);
                 throw;
             }
         }
@@ -275,19 +281,18 @@ namespace Jomura.Data
         /// SqlDataReaderオブジェクト消滅時に、
         /// Connectionオブジェクトも破棄されます。
         /// </remarks>
-        protected SqlDataReader ExecuteReader(string sql,
-            Collection<SqlParameter> parameterList)
+        protected DbDataReader ExecuteReader(string sql,
+            Collection<DbParameter> parameterList)
         {
-            SqlCommand command = InitCommand(sql, parameterList);
+            DbCommand command = InitCommand(sql, parameterList);
             try
             {
                 command.Connection.Open();
                 return command.ExecuteReader(CommandBehavior.CloseConnection);
             }
-            catch (SqlException se)
+            catch (DbException de)
             {
-                //TODO ログ出力
-                Debug.WriteLine(se);
+                Trace.TraceError(de.StackTrace);
                 throw;
             }
         }
@@ -305,7 +310,7 @@ namespace Jomura.Data
         /// SqlDataReaderオブジェクト消滅時に、
         /// Connectionオブジェクトも破棄されます。
         /// </remarks>
-        protected SqlDataReader ExecuteReader(string sql)
+        protected DbDataReader ExecuteReader(string sql)
         {
             return ExecuteReader(sql, null);
         }
@@ -322,18 +327,17 @@ namespace Jomura.Data
         /// 結果セットが空の場合は、null 参照。
         /// </returns>
         protected object ExecuteScalar(string sql,
-            Collection<SqlParameter> parameterList)
+            Collection<DbParameter> parameterList)
         {
-            SqlCommand command = InitCommand(sql, parameterList);
+            DbCommand command = InitCommand(sql, parameterList);
             try
             {
                 command.Connection.Open();
                 return command.ExecuteScalar();
             }
-            catch (SqlException se)
+            catch (DbException de)
             {
-                //TODO ログ出力
-                Debug.WriteLine(se);
+                Trace.TraceError(de.StackTrace);
                 throw;
             }
             finally
@@ -362,7 +366,7 @@ namespace Jomura.Data
         #region "UPDATE" query
 
         /// <summary>
-        /// クエリの実行を行う。
+        /// 更新系クエリの実行を行う。
         /// </summary>
         /// <param name="sql">SQL文</param>
         /// <param name="parameterList">
@@ -370,24 +374,33 @@ namespace Jomura.Data
         /// </param>
         /// <returns>正常に更新された行の数。</returns>
         protected int ExecuteNonQuery(string sql,
-            Collection<SqlParameter> parameterList)
+            Collection<DbParameter> parameterList)
         {
-            SqlCommand command = InitCommand(sql, parameterList);
+            DbCommand command = InitCommand(sql, parameterList);
             try
             {
                 command.Connection.Open();
                 return command.ExecuteNonQuery();
             }
-            catch (SqlException se)
+            catch (DbException de)
             {
-                //TODO ログ出力
-                Debug.WriteLine(se);
+                Trace.TraceError(de.StackTrace);
                 throw;
             }
             finally
             {
                 command.Connection.Close();
             }
+        }
+
+        /// <summary>
+        /// 更新系クエリの実行を行う。
+        /// </summary>
+        /// <param name="sql">SQL文</param>
+        /// <returns>正常に更新された行の数。</returns>
+        protected int ExecuteNonQuery(string sql)
+        {
+            return ExecuteNonQuery(sql, null);
         }
 
         #endregion
@@ -419,19 +432,16 @@ namespace Jomura.Data
                 }
 
                 //TODO SQLログ出力
-                Debug.WriteLine(command.CommandText + sqlParamsStr);
+                Trace.TraceInformation(command.CommandText + sqlParamsStr);
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e);
-                Console.WriteLine(e);
-
+                Trace.TraceError(e.StackTrace);
                 //Do Nothing
             }
         }
 
         #endregion
-
 
         #region IDisposable メンバ
 
