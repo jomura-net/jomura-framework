@@ -190,6 +190,7 @@ namespace Jomura
         /// </summary>
         /// <param name="uriStr">URL文字列</param>
         /// <param name="queryStringName">クエリ文字列名</param>
+        /// <returns>編集後のURL文字列</returns>
         public static string RemoveQueryString(string uriStr, string queryStringName)
         {
             int index = uriStr.IndexOf('?');
