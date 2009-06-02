@@ -60,6 +60,7 @@ namespace Jomura.Data.Util
         /// <summary>
         /// 差分比較する際に無視するカラム名を指定するコンストラクタ
         /// </summary>
+        /// <param name="ignoreColumns">無視するカラム名</param>
         public DatabaseCopy(string[] ignoreColumns)
             : this()
         {

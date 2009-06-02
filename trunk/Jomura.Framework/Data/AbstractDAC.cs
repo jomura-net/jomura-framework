@@ -97,6 +97,8 @@ namespace Jomura.Data
         /// <summary>
         /// DBパラメータインスタンスを生成する。
         /// </summary>
+        /// <param name="parameterName">パラメータ名</param>
+        /// <param name="value">パラメータ値</param>
         /// <returns>DBパラメータインスタンス</returns>
         protected DbParameter CreateParameter(string parameterName, object value)
         {

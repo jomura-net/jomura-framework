@@ -27,6 +27,13 @@ namespace Jomura.Diagnostics.Web
     {
         #region IHttpModule メンバ
 
+        /// <summary>
+        /// 各種設定を読み取り、
+        /// トレースファイルを格納するフォルダを作成し、
+        /// Request開始イベントに、TraceRequestメソッドを紐付け、
+        /// Request終了イベントに、TraceResponseメソッドを紐付ける。
+        /// </summary>
+        /// <param name="app">Httpコンテキスト</param>
         void IHttpModule.Init(HttpApplication app)
         {
             Debug.WriteLine("HttpTraceModule Init.");
@@ -51,6 +58,9 @@ namespace Jomura.Diagnostics.Web
             app.EndRequest += new EventHandler(TraceResponse);
         }
 
+        /// <summary>
+        /// 何もしない。
+        /// </summary>
         void IHttpModule.Dispose()
         {
             Debug.WriteLine("HttpTraceModule Disposed.");
