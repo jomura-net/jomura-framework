@@ -83,6 +83,12 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Test.WebControls", "Test.We
 		StartServerOnDebug = "false"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jomura.LogService", "Jomura.LogService\Jomura.LogService.csproj", "{CCDBBCC8-A551-4F6A-BE93-D07A3BE9AE81}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Jomura.LogServiceSetup", "Jomura.LogServiceSetup\LogServiceSetup.vdproj", "{0B4943F9-3963-453C-AC3C-200B9A807091}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Jomura.LogService", "Test.Jomura.LogService\Test.Jomura.LogService.csproj", "{48CBC267-2ECD-4B3B-A16D-F5C698B36CEA}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -147,6 +153,38 @@ Global
 		{E04C9AB2-9299-4CDD-9D6F-3DDB48520B8C}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{E04C9AB2-9299-4CDD-9D6F-3DDB48520B8C}.Release|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{E04C9AB2-9299-4CDD-9D6F-3DDB48520B8C}.Release|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CCDBBCC8-A551-4F6A-BE93-D07A3BE9AE81}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{CCDBBCC8-A551-4F6A-BE93-D07A3BE9AE81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCDBBCC8-A551-4F6A-BE93-D07A3BE9AE81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCDBBCC8-A551-4F6A-BE93-D07A3BE9AE81}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CCDBBCC8-A551-4F6A-BE93-D07A3BE9AE81}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CCDBBCC8-A551-4F6A-BE93-D07A3BE9AE81}.Release|.NET.ActiveCfg = Release|Any CPU
+		{CCDBBCC8-A551-4F6A-BE93-D07A3BE9AE81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCDBBCC8-A551-4F6A-BE93-D07A3BE9AE81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCDBBCC8-A551-4F6A-BE93-D07A3BE9AE81}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{CCDBBCC8-A551-4F6A-BE93-D07A3BE9AE81}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0B4943F9-3963-453C-AC3C-200B9A807091}.Debug|.NET.ActiveCfg = Debug
+		{0B4943F9-3963-453C-AC3C-200B9A807091}.Debug|.NET.Build.0 = Debug
+		{0B4943F9-3963-453C-AC3C-200B9A807091}.Debug|Any CPU.ActiveCfg = Debug
+		{0B4943F9-3963-453C-AC3C-200B9A807091}.Debug|Any CPU.Build.0 = Debug
+		{0B4943F9-3963-453C-AC3C-200B9A807091}.Debug|Mixed Platforms.ActiveCfg = Debug
+		{0B4943F9-3963-453C-AC3C-200B9A807091}.Debug|Mixed Platforms.Build.0 = Debug
+		{0B4943F9-3963-453C-AC3C-200B9A807091}.Release|.NET.ActiveCfg = Release
+		{0B4943F9-3963-453C-AC3C-200B9A807091}.Release|.NET.Build.0 = Release
+		{0B4943F9-3963-453C-AC3C-200B9A807091}.Release|Any CPU.ActiveCfg = Release
+		{0B4943F9-3963-453C-AC3C-200B9A807091}.Release|Any CPU.Build.0 = Release
+		{0B4943F9-3963-453C-AC3C-200B9A807091}.Release|Mixed Platforms.ActiveCfg = Release
+		{0B4943F9-3963-453C-AC3C-200B9A807091}.Release|Mixed Platforms.Build.0 = Release
+		{48CBC267-2ECD-4B3B-A16D-F5C698B36CEA}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{48CBC267-2ECD-4B3B-A16D-F5C698B36CEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48CBC267-2ECD-4B3B-A16D-F5C698B36CEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48CBC267-2ECD-4B3B-A16D-F5C698B36CEA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{48CBC267-2ECD-4B3B-A16D-F5C698B36CEA}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{48CBC267-2ECD-4B3B-A16D-F5C698B36CEA}.Release|.NET.ActiveCfg = Release|Any CPU
+		{48CBC267-2ECD-4B3B-A16D-F5C698B36CEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48CBC267-2ECD-4B3B-A16D-F5C698B36CEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48CBC267-2ECD-4B3B-A16D-F5C698B36CEA}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{48CBC267-2ECD-4B3B-A16D-F5C698B36CEA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -155,5 +193,6 @@ Global
 		{2B843C2B-2948-4AD6-BB2E-FFC36996E7AE} = {61B34AC8-16A0-43B7-978A-DE6303DC929D}
 		{6F5AE11C-0DF9-4027-91E0-D952F83A0601} = {61B34AC8-16A0-43B7-978A-DE6303DC929D}
 		{E04C9AB2-9299-4CDD-9D6F-3DDB48520B8C} = {61B34AC8-16A0-43B7-978A-DE6303DC929D}
+		{48CBC267-2ECD-4B3B-A16D-F5C698B36CEA} = {61B34AC8-16A0-43B7-978A-DE6303DC929D}
 	EndGlobalSection
 EndGlobal
