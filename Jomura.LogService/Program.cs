@@ -2,7 +2,7 @@
 using System.ServiceProcess;
 using System.Text;
 
-namespace LogService
+namespace Jomura.log4netRemotingService
 {
     static class Program
     {

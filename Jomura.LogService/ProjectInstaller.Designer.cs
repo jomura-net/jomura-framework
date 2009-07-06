@@ -1,4 +1,4 @@
-﻿namespace Jomura.LogService
+﻿namespace Jomura.log4netRemotingService
 {
     partial class ProjectInstaller
     {
@@ -42,8 +42,8 @@
             // serviceInstaller1
             // 
             this.serviceInstaller1.Description = "log4netのRemotingAppenderからのログ送信を受け取るWindowsサービスです。";
-            this.serviceInstaller1.DisplayName = "Jomura.LogService";
-            this.serviceInstaller1.ServiceName = "Jomura.LogService";
+            this.serviceInstaller1.DisplayName = "Jomura log4netRemotingService";
+            this.serviceInstaller1.ServiceName = "log4netRemotingService";
             this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller

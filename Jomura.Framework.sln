@@ -83,7 +83,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Test.WebControls", "Test.We
 		StartServerOnDebug = "false"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jomura.LogService", "Jomura.LogService\Jomura.LogService.csproj", "{CCDBBCC8-A551-4F6A-BE93-D07A3BE9AE81}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jomura.log4netRemotingService", "Jomura.LogService\Jomura.log4netRemotingService.csproj", "{CCDBBCC8-A551-4F6A-BE93-D07A3BE9AE81}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Jomura.LogServiceSetup", "Jomura.LogServiceSetup\LogServiceSetup.vdproj", "{0B4943F9-3963-453C-AC3C-200B9A807091}"
 EndProject

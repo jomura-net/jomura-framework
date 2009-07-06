@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration.Install;
 
-namespace Jomura.LogService
+namespace Jomura.log4netRemotingService
 {
     [RunInstaller(true)]
     public partial class ProjectInstaller : Installer
@@ -18,7 +18,7 @@ namespace Jomura.LogService
             //インストール直後自動開始
             System.ServiceProcess.ServiceController sc =
                 new System.ServiceProcess.ServiceController();
-            sc.ServiceName = "Jomura.LogService";
+            sc.ServiceName = "log4netRemotingService";
             sc.Start();
         }
 
@@ -27,8 +27,11 @@ namespace Jomura.LogService
             //アンインストール直前自動停止
             System.ServiceProcess.ServiceController sc =
                 new System.ServiceProcess.ServiceController();
-            sc.ServiceName = "Jomura.LogService";
-            sc.Stop();
+            sc.ServiceName = "log4netRemotingService";
+            if (sc.CanStop)
+            {
+                sc.Stop();
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace LogService
+﻿namespace Jomura.log4netRemotingService
 {
     partial class RemoteLoggingService
     {
