@@ -11,7 +11,7 @@ using log4net.Config;
 using log4net.Plugin;
 using log4net.Repository;
 
-namespace LogService
+namespace Jomura.log4netRemotingService
 {
     /// <summary>
     /// log4netのRemotingAppenderによるログ送信を受信するWindowsサービス。<br />
@@ -48,12 +48,12 @@ namespace LogService
             // initial values
             int port = 8085;
             string portStr = ConfigurationManager.AppSettings
-                ["Jomura.Log.LogService.port"];
+                ["Jomura.log4netRemotingService.port"];
             int.TryParse(portStr, out port);
             string sinkUri = ConfigurationManager.AppSettings
-                ["Jomura.Log.LogService.sinkUri"] ?? "LoggingSink";
+                ["Jomura.log4netRemotingService.sinkUri"] ?? "LoggingSink";
             string configPath = ConfigurationManager.AppSettings
-                ["Jomura.Log.LogService.configPath"];
+                ["Jomura.log4netRemotingService.configPath"];
 
             m_remotingChannel = new TcpChannel(port);
 
