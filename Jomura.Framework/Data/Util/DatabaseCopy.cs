@@ -36,6 +36,18 @@ namespace Jomura.Data.Util
         delegate void CopyTableDgt(string srcConnStr, string destConnStr, string tableName);
 
         /// <summary>
+        /// タイムアウト時間を設定する。
+        /// デフォルト値は、
+        /// パラメータ"CommandTimeout"で指定する。
+        /// </summary>
+        public int CommandTimeout
+        {
+            get { return m_CommandTimeout; }
+            set { m_CommandTimeout = value; }
+        }
+        int m_CommandTimeout = -1;
+
+        /// <summary>
         /// SQL種別毎の処理数
         /// Counts[Create|Drop] … 処理されたテーブル数
         /// Counts[Insert|Update|Delete] … 処理されたレコード数
@@ -224,7 +236,7 @@ namespace Jomura.Data.Util
 
         #region Database関連操作メソッド
 
-        static List<string> GetTableNames(string connStr)
+        List<string> GetTableNames(string connStr)
         {
             List<string> tables = new List<string>();
 
@@ -239,6 +251,10 @@ select name
             {
                 conn.Open();
                 SqlCommand selectCmd = new SqlCommand(sql, conn);
+                if (CommandTimeout != -1)
+                {
+                    selectCmd.CommandTimeout = CommandTimeout;
+                }
                 using (IDataReader dr = selectCmd.ExecuteReader())
                 {
                     while (dr.Read())
@@ -254,12 +270,12 @@ select name
         
         #region Table操作関連メソッド
 
-        static int ExecuteNonQuery(string connStr, string sql)
+        int ExecuteNonQuery(string connStr, string sql)
         {
             return ExecuteNonQuery(connStr, sql, null);
         }
 
-        static int ExecuteNonQuery(string connStr, string sql, SqlParameter[] parameters)
+        int ExecuteNonQuery(string connStr, string sql, SqlParameter[] parameters)
         {
             //TODO SQLログ出力
             Trace.TraceInformation("sql : " + sql);
@@ -272,6 +288,10 @@ select name
                 {
                     cmd.Parameters.AddRange(parameters);
                 }
+                if (CommandTimeout != -1)
+                {
+                    cmd.CommandTimeout = CommandTimeout;
+                }
                 return cmd.ExecuteNonQuery();
             }
         }
@@ -282,7 +302,7 @@ select name
         /// <param name="connStr">複製元DB接続文字列</param>
         /// <param name="tableName">テーブル名</param>
         /// <returns>"Create Table"SQL文</returns>
-        static string MakeCreateTableSql(string connStr, string tableName)
+        string MakeCreateTableSql(string connStr, string tableName)
         {
             StringBuilder createSql = new StringBuilder();
             createSql.AppendFormat("create table {0} (\n", tableName);
@@ -319,6 +339,10 @@ select c.name 'columnname'
                 conn.Open();
                 SqlCommand selectCmd = new SqlCommand(sql, conn);
                 selectCmd.Parameters.Add(new SqlParameter("@tablename", tableName));
+                if (CommandTimeout != -1)
+                {
+                    selectCmd.CommandTimeout = CommandTimeout;
+                }
 
                 using (IDataReader dr = selectCmd.ExecuteReader())
                 {
@@ -337,7 +361,7 @@ select c.name 'columnname'
             return createSql.ToString();
         }
 
-        static string MakePrimaryKeyStr(string connStr, string tableName)
+        string MakePrimaryKeyStr(string connStr, string tableName)
         {
             string[] pkeys = GetPrimaryKeys(connStr, tableName);
             if (pkeys.Length == 0)
@@ -583,6 +607,10 @@ SELECT @INS_CNT AS InsertRows,
                 selectCmd.Parameters.Add(new SqlParameter("@tablename", tableName));
                 selectCmd.Parameters.Add(new SqlParameter("@src_db", srcDbName));
                 selectCmd.Parameters.Add(new SqlParameter("@dst_db", destDbName));
+                if (CommandTimeout != -1)
+                {
+                    selectCmd.CommandTimeout = CommandTimeout;
+                }
                 using (IDataReader dr = selectCmd.ExecuteReader())
                 {
                     while (dr.Read())
@@ -796,7 +824,7 @@ SELECT @INS_CNT AS InsertRows,
 
         #endregion
 
-        static void GetTableData(string connStr, string tableName, DataSet ds)
+        void GetTableData(string connStr, string tableName, DataSet ds)
         {
             string sql = string.Format(CultureInfo.CurrentCulture, "SELECT * FROM {0}", tableName);
 
@@ -807,13 +835,17 @@ SELECT @INS_CNT AS InsertRows,
                 conn.Open();
                 // select用コマンド・オブジェクトの作成
                 da.SelectCommand = new SqlCommand(sql, conn);
+                if (CommandTimeout != -1)
+                {
+                    da.SelectCommand.CommandTimeout = CommandTimeout;
+                }
 
                 // データセットへの読み込み
                 da.Fill(ds, tableName);
             }
         }
 
-        static string[] GetPrimaryKeys(string connStr, string tableName)
+        string[] GetPrimaryKeys(string connStr, string tableName)
         {
             List<string> pkeys = new List<string>();
 
@@ -823,6 +855,10 @@ SELECT @INS_CNT AS InsertRows,
                 SqlCommand selectCmd = new SqlCommand("sp_pkeys", conn);
                 selectCmd.CommandType = CommandType.StoredProcedure;
                 selectCmd.Parameters.Add(new SqlParameter("@table_name", tableName));
+                if (CommandTimeout != -1)
+                {
+                    selectCmd.CommandTimeout = CommandTimeout;
+                }
 
                 using (IDataReader dr = selectCmd.ExecuteReader())
                 {
