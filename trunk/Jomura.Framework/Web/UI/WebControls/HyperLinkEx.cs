@@ -10,6 +10,8 @@ namespace Jomura.Web.UI.WebControls
 {
     /// <summary>
     /// System.Web.UI.WebControls.HyperLinkの拡張
+    /// 
+    /// (1)Transactionプロパティがtrueの場合、NavigateUrlにトランザクショントークンを付加する。
     /// </summary>
     [ToolboxData("<{0}:HyperLinkEx runat=\"server\"></{0}:HyperLinkEx>")]
     public class HyperLinkEx : HyperLink
