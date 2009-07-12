@@ -3,6 +3,8 @@ using NUnit.Framework;
 using Test.Jomura.Framework.Data;
 using System.Data.Common;
 using System.Collections.ObjectModel;
+using System;
+using System.Collections.Generic;
 
 namespace Test.Jomura.Framework
 {
@@ -23,11 +25,11 @@ INSERT INTO TestTable01
   @id
  ,@value
  )";
-            Collection<DbParameter> parms = new Collection<DbParameter>();
+            List<DbParameter> parms = new List<DbParameter>();
             parms.Add(CreateParameter("@id", 1));
             parms.Add(CreateParameter("@value", "‚Ä‚·‚Æ1"));
 
-            Assert.AreEqual(ExecuteNonQuery(sql, parms), 1);
+            Assert.AreEqual(ExecuteNonQuery(sql, parms.ToArray()), 1);
         }
 
         [TearDown]

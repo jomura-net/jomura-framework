@@ -180,26 +180,29 @@ namespace Jomura.Data
         /// SQL・パラメータのログ出力を行う。
         /// </summary>
         /// <param name="commandText">SQL文</param>
-        /// <param name="parameterList">SQLパラメータ</param>
+        /// <param name="parameters">SQLパラメータ配列</param>
+        /// <param name="commandType">命令型。</param>
         /// <returns>SQLコマンドインスタンス</returns>
         DbCommand InitCommand(string commandText,
-            Collection<DbParameter> parameterList)
+            DbParameter[] parameters,
+            CommandType? commandType)
         {
             DbCommand command = Connection.CreateCommand();
-            command.CommandType = CommandType.Text;
-            command.CommandText = commandText;
+
+            if (commandType.HasValue)
+            {
+                command.CommandType = commandType.Value;
+            }
 
             if (CommandTimeout != -1)
             {
                 command.CommandTimeout = CommandTimeout;
             }
 
-            if (parameterList != null)
-            {
-                DbParameter[] parameters = new DbParameter[parameterList.Count];
-                parameterList.CopyTo(parameters, 0);
+            command.CommandText = commandText;
 
-                command.Parameters.Clear();
+            if (parameters != null)
+            {
                 command.Parameters.AddRange(parameters);
             }
 
@@ -230,19 +233,20 @@ namespace Jomura.Data
         /// </summary>
         /// <param name="dataTable">参照結果テーブル</param>
         /// <param name="sql">SQL文</param>
-        /// <param name="parameterList">SQLパラメータのリスト</param>
+        /// <param name="parameters">SQLパラメータ配列</param>
+        /// <param name="commandType">命令型</param>
         /// <returns>
         /// 正常に追加または更新された行数。
         /// この行数には、行を返さないステートメントの
         /// 影響を受ける行は含まれません。 
         /// </returns>
         protected int Fill(DataTable dataTable, string sql,
-            Collection<DbParameter> parameterList)
+            DbParameter[] parameters, CommandType? commandType)
         {
             //最初にデータをクリアする。
             dataTable.Clear();
 
-            Adapter.SelectCommand = InitCommand(sql, parameterList);
+            Adapter.SelectCommand = InitCommand(sql, parameters, commandType);
             try
             {
                 return Adapter.Fill(dataTable);
@@ -255,15 +259,17 @@ namespace Jomura.Data
         }
 
         /// <summary>
-        /// 参照系クエリの実行を行う。
+        /// overload
         /// </summary>
-        /// <param name="dataTable">参照結果テーブル</param>
-        /// <param name="sql">SQL文</param>
-        /// <returns>
-        /// 正常に追加または更新された行数。
-        /// この行数には、行を返さないステートメントの
-        /// 影響を受ける行は含まれません。 
-        /// </returns>
+        protected int Fill(DataTable dataTable, string sql,
+            DbParameter[] parameters)
+        {
+            return Fill(dataTable, sql, parameters, null);
+        }
+
+        /// <summary>
+        /// overload
+        /// </summary>
         protected int Fill(DataTable dataTable, string sql)
         {
             return this.Fill(dataTable, sql, null);
@@ -275,7 +281,8 @@ namespace Jomura.Data
         /// Closeする。
         /// </summary>
         /// <param name="sql">SQL文</param>
-        /// <param name="parameterList">SQLパラメータのリスト</param>
+        /// <param name="parameters">SQLパラメータ配列</param>
+        /// <param name="commandType">命令型</param>
         /// <returns>DataReaderのインスタンス</returns>
         /// <remarks>
         /// CommandBehavior列挙体に、
@@ -284,9 +291,9 @@ namespace Jomura.Data
         /// Connectionオブジェクトも破棄されます。
         /// </remarks>
         protected DbDataReader ExecuteReader(string sql,
-            Collection<DbParameter> parameterList)
+            DbParameter[] parameters, CommandType? commandType)
         {
-            DbCommand command = InitCommand(sql, parameterList);
+            DbCommand command = InitCommand(sql, parameters, commandType);
             try
             {
                 command.Connection.Open();
@@ -300,21 +307,19 @@ namespace Jomura.Data
         }
 
         /// <summary>
-        /// 参照系クエリの実行を行うDataReaderを返す。
-        /// 処理終了時には、自動的にコネクションは
-        /// Closeする。
+        /// overload
         /// </summary>
-        /// <param name="sql">SQL文</param>
-        /// <returns>DataReaderのインスタンス</returns>
-        /// <remarks>
-        /// CommandBehavior列挙体に、
-        /// CloseConnectionが指定されているので、
-        /// SqlDataReaderオブジェクト消滅時に、
-        /// Connectionオブジェクトも破棄されます。
-        /// </remarks>
+        protected DbDataReader ExecuteReader(string sql, DbParameter[] parameters)
+        {
+            return ExecuteReader(sql, parameters, null);
+        }
+
+        /// <summary>
+        /// overload
+        /// </summary>
         protected DbDataReader ExecuteReader(string sql)
         {
-            return ExecuteReader(sql, null);
+            return ExecuteReader(sql, null, null);
         }
 
         /// <summary>
@@ -323,15 +328,16 @@ namespace Jomura.Data
         /// 残りの列または行は無視されます。
         /// </summary>
         /// <param name="sql">SQL文</param>
-        /// <param name="parameterList">SQLパラメータのリスト</param>
+        /// <param name="parameters">SQLパラメータ配列</param>
+        /// <param name="commandType">命令型</param>
         /// <returns>
         /// 結果セットの最初の行の最初の列。
         /// 結果セットが空の場合は、null 参照。
         /// </returns>
         protected object ExecuteScalar(string sql,
-            Collection<DbParameter> parameterList)
+            DbParameter[] parameters, CommandType? commandType)
         {
-            DbCommand command = InitCommand(sql, parameterList);
+            DbCommand command = InitCommand(sql, parameters, commandType);
             try
             {
                 command.Connection.Open();
@@ -349,18 +355,19 @@ namespace Jomura.Data
         }
 
         /// <summary>
-        /// クエリを実行し、そのクエリが返す結果セットの
-        /// 最初の行にある最初の列を返します。
-        /// 残りの列または行は無視されます。
+        /// overload
         /// </summary>
-        /// <param name="sql">SQL文</param>
-        /// <returns>
-        /// 結果セットの最初の行の最初の列。
-        /// 結果セットが空の場合は、null 参照。
-        /// </returns>
+        protected object ExecuteScalar(string sql, DbParameter[] parameters)
+        {
+            return ExecuteScalar(sql, parameters, null);
+        }
+
+        /// <summary>
+        /// overload
+        /// </summary>
         protected object ExecuteScalar(string sql)
         {
-            return ExecuteScalar(sql, null);
+            return ExecuteScalar(sql, null, null);
         }
 
         #endregion
@@ -371,14 +378,15 @@ namespace Jomura.Data
         /// 更新系クエリの実行を行う。
         /// </summary>
         /// <param name="sql">SQL文</param>
-        /// <param name="parameterList">
-        /// 値が入っているSQLパラメータのリスト
+        /// <param name="parameters">
+        /// 値が入っているSQLパラメータ配列
         /// </param>
+        /// <param name="commandType">命令型</param>
         /// <returns>正常に更新された行の数。</returns>
         protected int ExecuteNonQuery(string sql,
-            Collection<DbParameter> parameterList)
+            DbParameter[] parameters, CommandType? commandType)
         {
-            DbCommand command = InitCommand(sql, parameterList);
+            DbCommand command = InitCommand(sql, parameters, commandType);
             try
             {
                 command.Connection.Open();
@@ -396,13 +404,19 @@ namespace Jomura.Data
         }
 
         /// <summary>
-        /// 更新系クエリの実行を行う。
+        /// overload
         /// </summary>
-        /// <param name="sql">SQL文</param>
-        /// <returns>正常に更新された行の数。</returns>
+        protected int ExecuteNonQuery(string sql, DbParameter[] parameters)
+        {
+            return ExecuteNonQuery(sql, parameters, null);
+        }
+
+        /// <summary>
+        /// overload
+        /// </summary>
         protected int ExecuteNonQuery(string sql)
         {
-            return ExecuteNonQuery(sql, null);
+            return ExecuteNonQuery(sql, null, null);
         }
 
         #endregion

@@ -1,5 +1,8 @@
 ﻿namespace Jomura.log4netRemotingService
 {
+    /// <summary>
+    /// auto-genarated
+    /// </summary>
     partial class ProjectInstaller
     {
         /*

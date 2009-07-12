@@ -8,6 +8,9 @@ namespace Jomura.log4netRemotingService
     [RunInstaller(true)]
     public partial class ProjectInstaller : Installer
     {
+        /// <summary>
+        /// auto-genarated Constructor
+        /// </summary>
         public ProjectInstaller()
         {
             InitializeComponent();
