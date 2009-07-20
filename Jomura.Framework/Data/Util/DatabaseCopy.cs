@@ -41,9 +41,8 @@ namespace Jomura.Data.Util
         delegate void CopyTableDgt(string srcConnStr, string destConnStr, string tableName);
 
         /// <summary>
-        /// タイムアウト時間を設定する。
-        /// デフォルト値は、
-        /// パラメータ"CommandTimeout"で指定する。
+        /// コマンドタイムアウト時間。
+        /// 指定しなければ"-1"が設定され、.NETのdefaut値(60秒)が適応される。
         /// </summary>
         public int CommandTimeout
         {

@@ -5,7 +5,8 @@ using System.Text;
 namespace Jomura.Data.Util
 {
     /// <summary>
-    /// 処理数をカウントするDDL種別
+    /// DDL種別
+    /// DatabaseCopyクラスで、処理数をカウントするために利用される。
     /// </summary>
     public enum SqlType
     {
