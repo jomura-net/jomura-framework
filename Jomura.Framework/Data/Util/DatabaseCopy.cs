@@ -32,6 +32,11 @@ namespace Jomura.Data.Util
         /// </summary>
         string[] ignoreColumns = new string[0];
 
+        /// <summary>
+        /// 行毎にSQLを発行する場合に、一括実行するSQL数
+        /// </summary>
+        readonly int BATCH_SIZE = 200;
+        
         // マルチスレッド化のためのデリゲート
         delegate void CopyTableDgt(string srcConnStr, string destConnStr, string tableName);
 
@@ -386,9 +391,9 @@ select c.name 'columnname'
         /// 同じスキーマのテーブルが、複製元・複製先の双方に存在していることが前提。
         /// 
         /// 複製元と複製先のDataSourceが同じ場合は、
-        /// 表毎にまとめて処理するので非常に高速。
+        /// 表毎にSQL3つでまとめて処理するので高速。
         /// 複製元と複製先のDataSourceが異なる場合は、
-        /// 行毎にSQLを発行する。
+        /// 行毎にSQLを発行するので低速。
         /// </summary>
         /// <param name="srcConnStr">複製元DB接続</param>
         /// <param name="destConnStr">複製先DB接続</param>
@@ -633,143 +638,181 @@ SELECT @INS_CNT AS InsertRows,
             int insCnt = 0;
             int updCnt = 0;
 
-            // (1)コピー先のテーブルデータをDataSetに読み込む
-            DataSet destDS = new DataSet();
-            destDS.Locale = CultureInfo.InvariantCulture;
-            GetTableData(destConnStr, tableName, destDS);
-
-            // (2)コピー元のテーブルデータをDataSetに読み込む
-            DataSet srcDS = new DataSet();
-            srcDS.Locale = CultureInfo.InvariantCulture;
-            GetTableData(srcConnStr, tableName, srcDS);
-
-            DataTable destDT = destDS.Tables[tableName];
-            DataTable srcDT = srcDS.Tables[tableName];
-
-            Debug.WriteLine(DateTime.Now + " " + tableName + ".Rows.Count(before) : " + destDT.Rows.Count);
-            Debug.WriteLine(DateTime.Now + " " + tableName + ".Rows.Count(after) : " + srcDT.Rows.Count);
-
-            // PrimaryKeys取得
-            List<string> pks = new List<string>(GetPrimaryKeys(destConnStr, tableName));
-
-            // (3)コピー先の行データのうち、コピー元に存在しない行を削除
-            foreach (DataRow destRow in destDT.Rows)
+            using (DataSet destDS = new DataSet())
+            using (DataSet srcDS = new DataSet())
             {
-                // PK一致の行があるか？ Yes→continue  No→DELETE
-                List<string> expression = new List<string>();
-                foreach (DataColumn column in destDT.Columns)
+                // (1)コピー先のテーブルデータをDataSetに読み込む
+                destDS.Locale = CultureInfo.InvariantCulture;
+                GetTableData(destConnStr, tableName, destDS);
+
+                // (2)コピー元のテーブルデータをDataSetに読み込む
+                srcDS.Locale = CultureInfo.InvariantCulture;
+                GetTableData(srcConnStr, tableName, srcDS);
+
+                DataTable destDT = destDS.Tables[tableName];
+                DataTable srcDT = srcDS.Tables[tableName];
+
+                Debug.WriteLine(DateTime.Now + " " + tableName + ".Rows.Count(before) : " + destDT.Rows.Count);
+                Debug.WriteLine(DateTime.Now + " " + tableName + ".Rows.Count(after) : " + srcDT.Rows.Count);
+
+                // PrimaryKeys取得
+                List<string> pks = new List<string>(GetPrimaryKeys(destConnStr, tableName));
+
+                List<string> batch_del = new List<string>();
+
+                // (3)コピー先の行データのうち、コピー元に存在しない行を削除
+                foreach (DataRow destRow in destDT.Rows)
                 {
-                    if (pks.Contains(column.ColumnName))
+                    // PK一致の行があるか？ Yes→continue  No→DELETE
+                    List<string> expression = new List<string>();
+                    foreach (DataColumn column in destDT.Columns)
                     {
-                        expression.Add(column.ColumnName + "='" + escape(destRow[column]) + "'");
-                    }
-                }
-                DataRow[] pkRow = srcDT.Select(string.Join(" and ", expression.ToArray()));
-                if (pkRow.Length == 0)
-                {
-                    // DELETEクエリ作成・実行
-                    StringBuilder deleteSql = new StringBuilder();
-                    deleteSql.Append("delete from " + tableName);
-                    deleteSql.Append(" where " + string.Join(" and ", expression.ToArray()));
-
-                    //Debug.WriteLine("delete sql : " + deleteSql.ToString());
-                    delCnt += ExecuteNonQuery(destConnStr, deleteSql.ToString());
-                }
-            }
-
-            // (4)DataSetの値とコピー元のテーブルデータを比較し、
-            //    DataSetを更新する。
-            foreach (DataRow srcRow in srcDT.Rows)
-            {
-                // 全カラム一致の行があるか？ Yes→continue  No→INSERT or UPDATE
-                List<string> expression = new List<string>();
-                List<string> expression4pk = new List<string>();
-                foreach (DataColumn column in srcDT.Columns)
-                {
-                    // 行一致条件に含めないカラムを無視
-                    if (-1 != Array.IndexOf(ignoreColumns, column.ColumnName))
-                    {
-                        continue;
-                    }
-
-                    string itemOfExpression = string.Empty;
-                    // 行一致条件文作成
-                    if (srcRow[column] is DBNull)
-                    {
-                        itemOfExpression = column.ColumnName + " is null";
-                    }
-                    else
-                    {
-                        itemOfExpression = column.ColumnName + "='" + escape(srcRow[column]) + "'";
-                    }
-                    expression.Add(itemOfExpression);
-
-                    // PK一致条件文作成
-                    if (pks.Contains(column.ColumnName))
-                    {
-                        expression4pk.Add(itemOfExpression);
-                    }
-                }
-
-                string expressionStr = string.Join(" and ", expression.ToArray());
-
-                DataRow[] destRows = destDT.Select(expressionStr);
-                if (destRows.Length != 0) continue;
-
-                // PK一致の行があるか？ Yes→UPDATE  No→INSERT
-                string expression4pkStr = string.Join(" and ", expression4pk.ToArray());
-                DataRow[] pkRow = destDT.Select(expression4pkStr);
-                if (pkRow.Length != 0)
-                {
-                    // UPDATE
-                    // SQL分作成
-                    StringBuilder updateSql = new StringBuilder();
-                    updateSql.Append("update " + tableName + " set ");
-                    List<string> expression4upd = new List<string>();
-                    foreach (DataColumn column in srcDT.Columns)
-                    {
-                        if (!pks.Contains(column.ColumnName))
+                        if (pks.Contains(column.ColumnName))
                         {
-                            if (srcRow[column] is DBNull)
-                            {
-                                expression4upd.Add(column.ColumnName + " = null");
-                            }
-                            else
-                            {
-                                expression4upd.Add(column.ColumnName + " = '" + escape(srcRow[column]) + "'");
-                            }
+                            expression.Add(column.ColumnName + "='" + escape(destRow[column]) + "'");
                         }
                     }
-                    updateSql.Append(string.Join(", ", expression4upd.ToArray()));
-                    updateSql.Append(" where " + expression4pkStr);
+                    DataRow[] pkRow = srcDT.Select(string.Join(" and ", expression.ToArray()));
+                    if (pkRow.Length == 0)
+                    {
+                        // DELETEクエリ作成・実行
+                        StringBuilder deleteSql = new StringBuilder();
+                        deleteSql.Append("delete from " + tableName);
+                        deleteSql.Append(" where " + string.Join(" and ", expression.ToArray()));
 
-                    //Debug.WriteLine("update sql : " + updateSql.ToString());
-                    updCnt += ExecuteNonQuery(destConnStr, updateSql.ToString());
+                        //Debug.WriteLine("delete sql : " + deleteSql.ToString());
+                        batch_del.Add(deleteSql.ToString());
+                        if (batch_del.Count > BATCH_SIZE)
+                        {
+                            delCnt += ExecuteNonQuery(destConnStr, string.Join("\n", batch_del.ToArray()));
+                            batch_del.Clear();
+                        }
+                    }
                 }
-                else
+                if (batch_del.Count > 0)
                 {
-                    // INSERT
-                    // SQL分作成
-                    StringBuilder insertSql = new StringBuilder();
-                    insertSql.Append("insert into " + tableName + " values (");
-                    List<string> expression4ist = new List<string>();
+                    delCnt += ExecuteNonQuery(destConnStr, string.Join("\n", batch_del.ToArray()));
+                    batch_del.Clear();
+                }
+
+                List<string> batch_upd = new List<string>();
+                List<string> batch_ins = new List<string>();
+
+                // (4)DataSetの値とコピー元のテーブルデータを比較し、
+                //    DataSetを更新する。
+                foreach (DataRow srcRow in srcDT.Rows)
+                {
+                    // 全カラム一致の行があるか？ Yes→continue  No→INSERT or UPDATE
+                    List<string> expression = new List<string>();
+                    List<string> expression4pk = new List<string>();
                     foreach (DataColumn column in srcDT.Columns)
                     {
+                        // 行一致条件に含めないカラムを無視
+                        if (-1 != Array.IndexOf(ignoreColumns, column.ColumnName))
+                        {
+                            continue;
+                        }
+
+                        string itemOfExpression = string.Empty;
+                        // 行一致条件文作成
                         if (srcRow[column] is DBNull)
                         {
-                            expression4ist.Add("null");
+                            itemOfExpression = column.ColumnName + " is null";
                         }
                         else
                         {
-                            expression4ist.Add("'" + escape(srcRow[column]) + "'");
+                            itemOfExpression = column.ColumnName + "='" + escape(srcRow[column]) + "'";
+                        }
+                        expression.Add(itemOfExpression);
+
+                        // PK一致条件文作成
+                        if (pks.Contains(column.ColumnName))
+                        {
+                            expression4pk.Add(itemOfExpression);
                         }
                     }
-                    insertSql.Append(string.Join(",", expression4ist.ToArray()) + ")");
 
-                    //Debug.WriteLine("insert sql : " + insertSql.ToString());
-                    insCnt += ExecuteNonQuery(destConnStr, insertSql.ToString());
+                    string expressionStr = string.Join(" and ", expression.ToArray());
+
+                    DataRow[] destRows = destDT.Select(expressionStr);
+                    if (destRows.Length != 0) continue;
+
+                    // PK一致の行があるか？ Yes→UPDATE  No→INSERT
+                    string expression4pkStr = string.Join(" and ", expression4pk.ToArray());
+                    DataRow[] pkRow = destDT.Select(expression4pkStr);
+                    if (pkRow.Length != 0)
+                    {
+                        // UPDATE
+                        // SQL分作成
+                        StringBuilder updateSql = new StringBuilder();
+                        updateSql.Append("update " + tableName + " set ");
+                        List<string> expression4upd = new List<string>();
+                        foreach (DataColumn column in srcDT.Columns)
+                        {
+                            if (!pks.Contains(column.ColumnName))
+                            {
+                                if (srcRow[column] is DBNull)
+                                {
+                                    expression4upd.Add(column.ColumnName + " = null");
+                                }
+                                else
+                                {
+                                    expression4upd.Add(column.ColumnName + " = '" + escape(srcRow[column]) + "'");
+                                }
+                            }
+                        }
+                        updateSql.Append(string.Join(", ", expression4upd.ToArray()));
+                        updateSql.Append(" where " + expression4pkStr);
+
+                        //Debug.WriteLine("update sql : " + updateSql.ToString());
+                        batch_upd.Add(updateSql.ToString());
+                        if (batch_upd.Count > BATCH_SIZE)
+                        {
+                            updCnt += ExecuteNonQuery(destConnStr, string.Join("\n", batch_upd.ToArray()));
+                            batch_upd.Clear();
+                        }
+                    }
+                    else
+                    {
+                        // INSERT
+                        // SQL分作成
+                        StringBuilder insertSql = new StringBuilder();
+                        insertSql.Append("insert into " + tableName + " values (");
+                        List<string> expression4ist = new List<string>();
+                        foreach (DataColumn column in srcDT.Columns)
+                        {
+                            if (srcRow[column] is DBNull)
+                            {
+                                expression4ist.Add("null");
+                            }
+                            else
+                            {
+                                expression4ist.Add("'" + escape(srcRow[column]) + "'");
+                            }
+                        }
+                        insertSql.Append(string.Join(",", expression4ist.ToArray()) + ")");
+
+                        //Debug.WriteLine("insert sql : " + insertSql.ToString());
+                        batch_ins.Add(insertSql.ToString());
+                        if (batch_ins.Count > BATCH_SIZE)
+                        {
+                            insCnt += ExecuteNonQuery(destConnStr, string.Join("\n", batch_ins.ToArray()));
+                            batch_ins.Clear();
+                        }
+                    }
+                }//end foreach loop
+                if (batch_upd.Count > 0)
+                {
+                    updCnt += ExecuteNonQuery(destConnStr, string.Join("\n", batch_upd.ToArray()));
+                    batch_upd.Clear();
+                }
+                if (batch_ins.Count > 0)
+                {
+                    insCnt += ExecuteNonQuery(destConnStr, string.Join("\n", batch_ins.ToArray()));
+                    batch_ins.Clear();
                 }
             }
+
             lock (counts)
             {
                 counts[SqlType.Delete] += delCnt;
